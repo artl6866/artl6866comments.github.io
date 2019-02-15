@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Quotes Dashboard</title>
+</head>
+<body>
+    <div class = 'container'>
+        <h1>Welcome {{user_name.fname}} {{user_name.lname}} !</h1>
+        <div>
+        <a href ="comment/edit/{{user_name.id}}">Edit My Account</a> |  <a href ="/logout">Logout</a>
+        </div>
+        <div class = 'col-md-9 d-inline-block align-top'>
+            <h3>Quotes</h3>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Author</th>
+                        <th scope="col">Quote</th>
+                        <th scope="col">Likes</th>
+                        <th scope="col">Posted By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for quote in my_quote %}
+                <tr>
+                    <td>{{quote.author}}</td>
+                    <td>{{quote.quote}}</td>
+                    <td>{{quote.user_like.all.count}}</td>
+                    <td><a href ="/comment/show/{{quote.user_quote.id}}">{{quote.user_quote.fname}} {{quote.user_quote.lname}}</a></td>
+                    
+                    <td>
+                    {% if request.session.user_id == quote.user_quote.id %}
+                    <a href = 'comment/delete/{{quote.id}}'>Delete</a>
+                    {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% for quote in other_quote %}
+                <tr>
+                    <td>{{quote.author}}</td>
+                    <td>{{quote.quote}}</td>
+                    <td>{{quote.user_like.all.count}}</td>
+                    <td><a href ="/comment/show/{{quote.user_quote.id}}">{{quote.user_quote.fname}} {{quote.user_quote.lname}}</a></td>
+                    <form action = '/comment/createlike' method = 'POST'>
+                        {% csrf_token %}
+                        <input type ='hidden' name = 'quote_id' value = {{quote.id}}>
+                    <td><input type = "submit" name = "like" value = "Like"></td>
+                    </form>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class = 'd-inline-block align-top'>
+      <h1>Add a Quote</h1>
+      {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li {% if message.tags %} {% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+      <form action = '/comment/processadd' method = 'POST'>
+            {% csrf_token %}
+            <!-- <div class="form-group row"> -->
+                <label for="inputPassword" class="col-sm-2 col-form-label">Author</label>
+                <!-- <div class="col-sm-10"> -->
+                    <input type="text" name = "author" class="form-control" id="inputPassword" placeholder="Author">
+                <!-- </div> -->
+            <!-- </div> -->
+
+            <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Quotes</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = "quote"></textarea>
+            </div>
+            <input type = "submit" name = "add" value = "Submit">
+      </form>
+    </div>
+</div>
+
+    
+
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
